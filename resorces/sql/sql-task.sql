@@ -27,7 +27,6 @@ ORDER BY seat_no;
 --Вывести города в которых больше 1 аэропорта ( код аэропорта, аэропорт, город)
 SELECT airports_data.airport_code, airports_data.airport_name -> 'en', airports_data.city -> 'ru'
 FROM airports_data
-WHERE
 GROUP BY airports_data.city, airports_data.airport_name, airports_data.airport_code
 HAVING COUNT(airports_data.city) > 1;
 
@@ -48,19 +47,62 @@ LIMIT 1;
 
 --Вывести самый дешевый и дорогой билет и стоимость ( в одном результирующем ответе)
 
-SELECT * FROM (SELECT *
-               FROM ticket_flights
-               WHERE amount IN (SELECT min(amount)
-                                FROM ticket_flights)
-               LIMIT 1) AS foo
+SELECT *
+FROM (SELECT *
+      FROM ticket_flights
+      WHERE amount IN (SELECT min(amount)
+                       FROM ticket_flights)
+      LIMIT 1) AS foo
 UNION
-SELECT * FROM (SELECT *
-               FROM ticket_flights
-               WHERE amount IN (SELECT max(amount)
-                                FROM ticket_flights)
-               LIMIT 1) AS foo1
+SELECT *
+FROM (SELECT *
+      FROM ticket_flights
+      WHERE amount IN (SELECT max(amount)
+                       FROM ticket_flights)
+      LIMIT 1) AS foo1;
 
 -- Написать DDL таблицы Customers , должны быть поля id , firstName, LastName, email , phone. Добавить ограничения на поля ( constraints) .
+
+CREATE TABLE IF NOT EXISTS customers
+(
+    id              bigserial PRIMARY KEY NOT NULL  UNIQUE,
+    firstName       varchar(100) NOT NULL,
+    lastName        varchar(100) NOT NULL,
+    email           varchar(50) UNIQUE,
+    phone           varchar(20) UNIQUE,
+    CONSTRAINT email CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
+    CONSTRAINT phone CHECK (phone ~* '^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$')
+);
+
+-- Написать DDL таблицы Orders , должен быть id, customerId,	quantity. Должен быть внешний ключ на таблицу customers + ограничения
+
+CREATE TABLE IF NOT EXISTS orders
+(
+    id              bigserial PRIMARY KEY NOT NULL  UNIQUE,
+    customerId      bigserial REFERENCES customers(id) ON DELETE CASCADE,
+    quantity        INT
+);
+
+-- Написать 5 insert в эти таблицы
+
+INSERT INTO customers (id, firstName, lastName, email, phone)
+VALUES ('1','Pavel','Lukyanovich','pavellukyanovich@mail.ru','375294737564'),
+       ('2','Egor','Petrov','egorpetrov@mail.ru','375294347698'),
+       ('3','Stanislav','Ivanov','stanislavivanov@yandex.ru','375331127532'),
+       ('4','Oleg','Zavalov','olegzavalov@mail.ru','375449836713'),
+       ('5','Elena','Titova','elenatitova@mail.ru','375334748114');
+
+INSERT INTO orders (id, customerId, quantity)
+VALUES ('1','4','2'),
+       ('2','1','8'),
+       ('3','3','5'),
+       ('4','5','11'),
+       ('5','2','1');
+
+-- Написать свой кастомный запрос ( rus + sql)
+
+
+
 
 
 
