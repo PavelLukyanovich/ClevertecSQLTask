@@ -25,10 +25,13 @@ GROUP BY aircrafts_data.aircraft_code, model, seat_no
 ORDER BY seat_no;
 
 --Вывести города в которых больше 1 аэропорта ( код аэропорта, аэропорт, город)
-SELECT airports_data.airport_code, airports_data.airport_name -> 'en', airports_data.city -> 'ru'
+SELECT airport_code, airport_name, city -> 'ru'
 FROM airports_data
-GROUP BY airports_data.city, airports_data.airport_name, airports_data.airport_code
-HAVING COUNT(airports_data.city) > 1;
+WHERE city IN
+      (SELECT airports_data.city
+       FROM airports_data
+       GROUP BY airports_data.city
+       HAVING COUNT(airports_data.city) > 1);
 
 
 --Найти ближайший вылетающий рейс из Екатеринбурга в Москву, на который еще не завершилась регистрация
