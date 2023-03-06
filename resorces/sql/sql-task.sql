@@ -25,7 +25,7 @@ GROUP BY aircrafts_data.aircraft_code, model, seat_no
 ORDER BY seat_no;
 
 --Вывести города в которых больше 1 аэропорта ( код аэропорта, аэропорт, город)
-SELECT airport_code, airport_name, city -> 'ru'
+SELECT airport_code, airport_name -> 'ru', city -> 'ru'
 FROM airports_data
 WHERE city IN
       (SELECT airports_data.city
