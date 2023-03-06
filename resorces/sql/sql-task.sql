@@ -65,11 +65,11 @@ FROM (SELECT *
 
 CREATE TABLE IF NOT EXISTS customers
 (
-    id              bigserial PRIMARY KEY NOT NULL  UNIQUE,
-    firstName       varchar(100) NOT NULL,
-    lastName        varchar(100) NOT NULL,
-    email           varchar(50) UNIQUE,
-    phone           varchar(20) UNIQUE,
+    id        bigserial PRIMARY KEY NOT NULL UNIQUE,
+    firstName varchar(100)          NOT NULL,
+    lastName  varchar(100)          NOT NULL,
+    email     varchar(50) UNIQUE,
+    phone     varchar(20) UNIQUE,
     CONSTRAINT email CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
     CONSTRAINT phone CHECK (phone ~* '^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$')
 );
@@ -78,28 +78,40 @@ CREATE TABLE IF NOT EXISTS customers
 
 CREATE TABLE IF NOT EXISTS orders
 (
-    id              bigserial PRIMARY KEY NOT NULL  UNIQUE,
-    customerId      bigserial REFERENCES customers(id) ON DELETE CASCADE,
-    quantity        INT
+    id         bigserial PRIMARY KEY NOT NULL UNIQUE,
+    customerId bigserial REFERENCES customers (id) ON DELETE CASCADE,
+    quantity   INT
 );
 
 -- Написать 5 insert в эти таблицы
 
 INSERT INTO customers (id, firstName, lastName, email, phone)
-VALUES ('1','Pavel','Lukyanovich','pavellukyanovich@mail.ru','375294737564'),
-       ('2','Egor','Petrov','egorpetrov@mail.ru','375294347698'),
-       ('3','Stanislav','Ivanov','stanislavivanov@yandex.ru','375331127532'),
-       ('4','Oleg','Zavalov','olegzavalov@mail.ru','375449836713'),
-       ('5','Elena','Titova','elenatitova@mail.ru','375334748114');
+VALUES ('1', 'Pavel', 'Lukyanovich', 'pavellukyanovich@mail.ru', '375294737564'),
+       ('2', 'Egor', 'Petrov', 'egorpetrov@mail.ru', '375294347698'),
+       ('3', 'Stanislav', 'Ivanov', 'stanislavivanov@yandex.ru', '375331127532'),
+       ('4', 'Oleg', 'Zavalov', 'olegzavalov@mail.ru', '375449836713'),
+       ('5', 'Elena', 'Titova', 'elenatitova@mail.ru', '375334748114');
 
 INSERT INTO orders (id, customerId, quantity)
-VALUES ('1','4','2'),
-       ('2','1','8'),
-       ('3','3','5'),
-       ('4','5','11'),
-       ('5','2','1');
+VALUES ('1', '4', '2'),
+       ('2', '1', '8'),
+       ('3', '3', '5'),
+       ('4', '5', '11'),
+       ('5', '2', '1');
+
+-- удалить таблицы
+
+DROP TABLE customers CASCADE;
+DROP TABLE orders;
 
 -- Написать свой кастомный запрос ( rus + sql)
+-- Вывести Имя, Фамилию и номер телефона пользователей у которых количество заказов больше 5.
+
+SELECT firstName, lastName, phone, o.quantity
+FROM customers
+         JOIN orders o on customers.id = o.customerId
+         JOIN orders o2 on o.quantity > 5
+GROUP BY firstName, phone, lastName, o.quantity
 
 
 
